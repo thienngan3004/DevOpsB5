@@ -7,6 +7,12 @@ pipeline {
         SERVER_USER = "root"
     }
     stages {
+        stage('Clean Workspace') {
+            steps {
+                // Tự động dọn sạch workspace để tránh lỗi xung đột Git
+                cleanWs()
+            }
+        }
         stage('Checkout') {
             steps {
                 echo "Checkout code thành công..."
