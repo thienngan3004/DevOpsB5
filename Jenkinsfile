@@ -6,16 +6,16 @@ pipeline {
         SERVER_HOST = "103.20.96.174"
         SERVER_USER = "root"
     }
+    options {
+        // Tắt checkout tự động của Jenkins để tránh xung đột
+        skipDefaultCheckout()
+    }
     stages {
-        stage('Clean Workspace') {
+        stage('Clean and Checkout') {
             steps {
-                // Tự động dọn sạch workspace để tránh lỗi xung đột Git
+                // Xóa sạch workspace trước, sau đó mới kéo code mới về
                 cleanWs()
-            }
-        }
-        stage('Checkout') {
-            steps {
-                echo "Checkout code thành công..."
+                checkout scm
             }
         }
         stage('Docker Build') {
