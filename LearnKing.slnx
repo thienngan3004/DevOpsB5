@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="LearnKing.Api/LearnKing.Api.csproj" />
+  <Project Path="LearnKing.Application/LearnKing.Application.csproj" />
+  <Project Path="LearnKing.Common/LearnKing.Common.csproj" />
+  <Project Path="LearnKing.Domain/LearnKing.Domain.csproj" />
+  <Project Path="LearnKing.Infrastructure/LearnKing.Infrastructure.csproj" />
+</Solution>
