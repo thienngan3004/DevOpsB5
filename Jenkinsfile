@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                sh "docker build -t docker.io/truongdev1510/$IMAGE_NAME:latest ."
+                sh "docker build -t docker.io/thienngan3004/$IMAGE_NAME:latest ."
             }
         }
         stage('Push Docker Hub') {
