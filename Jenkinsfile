@@ -1,38 +1,43 @@
 pipeline {
     agent any
+
     environment {
-        // Sử dụng trực tiếp username thienngan để đồng bộ
-        DOCKER_USER_NAME = "thienngan"
-        IMAGE_NAME = "server-lms-net"
-        SERVER_HOST = "103.20.96.174"
-        SERVER_USER = "root"
+        IMAGE_NAME = "thienngan/server-lms-net:latest"
+        COMPOSE_FILE = "docker-compose.prod.yml"
     }
-    options {
-        // Tắt checkout tự động của Jenkins để tránh xung đột
-        skipDefaultCheckout()
-    }
+
     stages {
-        stage('Clean and Checkout') {
+        stage('1. Checkout Code') {
             steps {
-                // Xóa sạch workspace trước, sau đó mới kéo code mới về
-                cleanWs()
+                echo 'Đang lấy mã nguồn mới nhất từ Git...'
                 checkout scm
             }
         }
-        stage('Docker Build') {
+
+        stage('2. Build Docker Image') {
             steps {
-                sh "docker build -t docker.io/${DOCKER_USER_NAME}/$IMAGE_NAME:latest ."
+                echo 'Đang tiến hành build Docker image...'
+                // Build image từ Dockerfile tại thư mục gốc
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
-        stage('Push Docker Hub') {
+
+        stage('3. Deploy with Docker Compose') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred',
-                    usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    // Đăng nhập và push lên đúng tài khoản thienngan
-                    sh "echo '$DOCKER_PASS' | docker login -u '$DOCKER_USER' --password-stdin"
-                    sh "docker push docker.io/${DOCKER_USER_NAME}/$IMAGE_NAME:latest"
-                }
+                echo 'Đang deploy container mới...'
+                // Dừng container cũ và bật container mới chạy ngầm
+                sh "docker compose -f ${COMPOSE_FILE} down"
+                sh "docker compose -f ${COMPOSE_FILE} up -d"
             }
+        }
+    }
+
+    post {
+        success {
+            echo '🎉 Deploy thành công rực rỡ! API đã sẵn sàng tại port 3007.'
+        }
+        failure {
+            echo '❌ Deploy thất bại! Kiểm tra lại log của Jenkins.'
         }
     }
 }
